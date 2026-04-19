@@ -1,0 +1,429 @@
+{
+  "info": {
+    "name": "JobMatch API",
+    "description": "Full API collection for JobMatch Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api" },
+    { "key": "access_token", "value": "" },
+    { "key": "refresh_token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (Worker)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/register/",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"worker1\",\n  \"password\": \"pass1234\",\n  \"name\": \"Алибек\",\n  \"surname\": \"Сейткали\",\n  \"patronymic\": \"Нурланович\",\n  \"email\": \"alibek@mail.ru\",\n  \"phone\": \"+77001234567\",\n  \"address\": \"Алматы, ул. Абая 10\",\n  \"role\": \"worker\",\n  \"auth_method\": \"other\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Success 201",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"user\": {\n    \"id\": 1,\n    \"login\": \"worker1\",\n    \"name\": \"Алибек\",\n    \"surname\": \"Сейткали\",\n    \"role\": \"worker\",\n    \"company\": \"\"\n  },\n  \"access\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register (Employer)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/register/",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"employer1\",\n  \"password\": \"pass1234\",\n  \"name\": \"Данияр\",\n  \"surname\": \"Ахметов\",\n  \"email\": \"daniyar@company.kz\",\n  \"phone\": \"+77009876543\",\n  \"role\": \"employer\",\n  \"company\": \"Tech Solutions KZ\",\n  \"auth_method\": \"other\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Success 201",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"user\": {\n    \"id\": 2,\n    \"login\": \"employer1\",\n    \"name\": \"Данияр\",\n    \"role\": \"employer\",\n    \"company\": \"Tech Solutions KZ\"\n  },\n  \"access\": \"eyJ...\",\n  \"refresh\": \"eyJ...\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', res.access);",
+                  "pm.collectionVariables.set('refresh_token', res.refresh);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/login/",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"worker1\",\n  \"password\": \"pass1234\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"user\": { \"id\": 1, \"login\": \"worker1\", \"role\": \"worker\" },\n  \"access\": \"eyJ...\",\n  \"refresh\": \"eyJ...\"\n}"
+            },
+            {
+              "name": "Wrong credentials 400",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"non_field_errors\": [\"Неверный логин или пароль\"]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/refresh/",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "code": 200,
+              "body": "{\n  \"access\": \"eyJ...\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/logout/",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "code": 200,
+              "body": "{\n  \"status\": \"Вы вышли из системы\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/auth/me/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "code": 200,
+              "body": "{\n  \"id\": 1,\n  \"login\": \"worker1\",\n  \"name\": \"Алибек\",\n  \"surname\": \"Сейткали\",\n  \"role\": \"worker\",\n  \"email\": \"alibek@mail.ru\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/change-password/",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"old_password\": \"pass1234\",\n  \"new_password\": \"newpass456\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "code": 200,
+              "body": "{\n  \"status\": \"Пароль успешно изменён\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Resumes (Worker)",
+      "item": [
+        {
+          "name": "Create Resume",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/resumes/",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Алибек\",\n  \"surname\": \"Сейткали\",\n  \"patronymic\": \"Нурланович\",\n  \"email\": \"alibek@mail.ru\",\n  \"phone\": \"+77001234567\",\n  \"address\": \"Алматы\",\n  \"profession\": \"programmer\",\n  \"level\": \"middle\",\n  \"experience_years\": 3,\n  \"city\": \"almaty\",\n  \"has_bachelor\": true,\n  \"bachelor_university\": \"КазНУ им. аль-Фараби\",\n  \"bachelor_years\": \"2018-2022\",\n  \"has_master\": false,\n  \"work_places\": \"ТОО Kaspi Bank — Junior Developer (2022-2023)\",\n  \"has_projects\": true,\n  \"project_links\": \"https://github.com/alibek/myproject\",\n  \"languages\": [\"kazakh\", \"russian\", \"english\"],\n  \"about\": \"Люблю писать чистый код и решать сложные задачи.\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Success 201",
+              "code": 201,
+              "body": "{\n  \"id\": 1,\n  \"profession\": \"programmer\",\n  \"level\": \"middle\",\n  \"city\": \"almaty\",\n  \"experience_years\": 3,\n  \"favorites_count\": 0,\n  \"is_favorited\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "My Resumes List",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/resumes/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "code": 200,
+              "body": "[\n  {\n    \"id\": 1,\n    \"profession\": \"programmer\",\n    \"level\": \"middle\",\n    \"favorites_count\": 2\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Resume by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/resumes/1/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          }
+        },
+        {
+          "name": "Update Resume (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/resumes/1/",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"level\": \"senior\",\n  \"experience_years\": 5\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "code": 200,
+              "body": "{\n  \"id\": 1,\n  \"level\": \"senior\",\n  \"experience_years\": 5\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Resume",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/resumes/1/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          },
+          "response": [
+            { "name": "Success 204", "code": 204, "body": "" }
+          ]
+        },
+        {
+          "name": "Resume Stats (FBV)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/resumes/stats/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "code": 200,
+              "body": "{\n  \"stats\": [\n    { \"resume_id\": 1, \"profession\": \"programmer\", \"favorites_count\": 3 }\n  ],\n  \"total_resumes\": 1\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Search (Employer)",
+      "item": [
+        {
+          "name": "Search All",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/search/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          }
+        },
+        {
+          "name": "Filter by Profession",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/search/?profession=programmer",
+              "query": [{ "key": "profession", "value": "programmer" }]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          }
+        },
+        {
+          "name": "Filter by Level + City",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/search/?level=senior&city=almaty",
+              "query": [
+                { "key": "level", "value": "senior" },
+                { "key": "city", "value": "almaty" }
+              ]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          }
+        },
+        {
+          "name": "Filter by Experience",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/search/?experience_min=2&experience_max=8",
+              "query": [
+                { "key": "experience_min", "value": "2" },
+                { "key": "experience_max", "value": "8" }
+              ]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          }
+        },
+        {
+          "name": "Filter by Language",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/search/?language=english",
+              "query": [{ "key": "language", "value": "english" }]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          }
+        },
+        {
+          "name": "Text Search",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/search/?search=Иванов",
+              "query": [{ "key": "search", "value": "Иванов" }]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Favorites (Employer)",
+      "item": [
+        {
+          "name": "Toggle Like (add)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/favorites/toggle/1/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          },
+          "response": [
+            {
+              "name": "Added",
+              "code": 200,
+              "body": "{\n  \"status\": \"added\"\n}"
+            },
+            {
+              "name": "Removed",
+              "code": 200,
+              "body": "{\n  \"status\": \"removed\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "My Favorites List",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/favorites/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "code": 200,
+              "body": "[\n  {\n    \"id\": 1,\n    \"resume\": {\n      \"id\": 1,\n      \"surname\": \"Сейткали\",\n      \"profession\": \"programmer\",\n      \"level\": \"middle\"\n    },\n    \"created_at\": \"2024-01-15T10:30:00Z\"\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notifications (Worker)",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/notifications/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "code": 200,
+              "body": "[\n  {\n    \"id\": 1,\n    \"message\": \"Ваше резюме понравилось компании «Tech Solutions KZ»\",\n    \"is_read\": false,\n    \"created_at\": \"2024-01-15T11:00:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Unread Count (FBV)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/notifications/unread-count/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          },
+          "response": [
+            { "name": "Success 200", "code": 200, "body": "{\n  \"unread\": 3\n}" }
+          ]
+        },
+        {
+          "name": "Mark All Read (FBV)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/notifications/read/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }]
+          },
+          "response": [
+            { "name": "Success 200", "code": 200, "body": "{\n  \"marked_read\": 3\n}" }
+          ]
+        }
+      ]
+    }
+  ]
+}

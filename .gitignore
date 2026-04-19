@@ -1,0 +1,12 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+
+# Angular
+node_modules/
+dist/
+
+# Angular cache
+.angular/
