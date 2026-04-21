@@ -1,0 +1,18 @@
+<div class="page-bg">
+  <div class="wrap">
+    <div class="main-shell">
+      <aside class="glass panel">
+        <h2>Employer menu</h2>
+        <button class="side-btn active">Главная</button>
+      </aside>
+
+      <main class="glass panel">
+        <h1>Добро пожаловать, {{ user?.company || user?.name }}</h1>
+      </main>
+
+      <aside class="glass panel">
+        <button class="account-btn" (click)="logout()">Выход</button>
+      </aside>
+    </div>
+  </div>
+</div>

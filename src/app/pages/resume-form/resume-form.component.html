@@ -1,0 +1,121 @@
+<div class="page-bg">
+  <div class="wrap">
+    <div class="main-shell">
+      <aside class="glass panel">
+        <a routerLink="/worker" class="side-btn">Главная</a>
+        <a routerLink="/worker/resume/create" class="side-btn active">Создать резюме</a>
+        <a routerLink="/worker/resumes" class="side-btn">Мои резюме</a>
+      </aside>
+
+      <main class="glass panel">
+        <h1 style="margin-top:0;">Создать резюме</h1>
+
+        <div class="light-card">
+          <div class="form-grid">
+            <input class="form-control" style="background:#fff;color:#111;" [(ngModel)]="photo" placeholder="Ссылка на фото">
+
+            <select class="form-control" style="background:#fff;color:#111;" [(ngModel)]="specialty" (change)="setDefaultLevel()">
+              <option value="programmer">Программист</option>
+              <option value="teacher">Мұғалім</option>
+            </select>
+
+            <select class="form-control" style="background:#fff;color:#111;" [(ngModel)]="level">
+              <option *ngFor="let item of specialties[specialty]" [value]="item">{{ item }}</option>
+            </select>
+
+            <select class="form-control" style="background:#fff;color:#111;" [(ngModel)]="experience">
+              <option *ngFor="let item of years" [value]="item">{{ item }}</option>
+            </select>
+
+            <select class="form-control" style="background:#fff;color:#111;" [(ngModel)]="city">
+              <option *ngFor="let item of cities" [value]="item">{{ item }}</option>
+            </select>
+
+            <input class="form-control" style="background:#fff;color:#111;" [(ngModel)]="country" readonly>
+          </div>
+
+          <div style="margin-top:18px;">
+            <strong>Бакалавр?</strong>
+            <div class="inline-actions" style="margin-top:10px;">
+              <button type="button" class="chip" [class.active]="bachelor === 'yes'" (click)="bachelor = 'yes'">Да</button>
+              <button type="button" class="chip" [class.active]="bachelor === 'no'" (click)="bachelor = 'no'">Нет</button>
+            </div>
+          </div>
+
+          <div *ngIf="bachelor === 'yes'" class="form-grid" style="margin-top:18px;">
+            <select class="form-control" style="background:#fff;color:#111;" [(ngModel)]="bachelorUniversity">
+              <option *ngFor="let item of universities" [value]="item">{{ item }}</option>
+            </select>
+
+            <select class="form-control" style="background:#fff;color:#111;" [(ngModel)]="bachelorYears">
+              <option *ngFor="let item of studyYears" [value]="item">{{ item }}</option>
+            </select>
+          </div>
+
+          <div style="margin-top:18px;">
+            <strong>Магистратура?</strong>
+            <div class="inline-actions" style="margin-top:10px;">
+              <button type="button" class="chip" [class.active]="masters === 'yes'" (click)="masters = 'yes'">Да</button>
+              <button type="button" class="chip" [class.active]="masters === 'no'" (click)="masters = 'no'">Нет</button>
+            </div>
+          </div>
+
+          <div *ngIf="masters === 'yes'" class="form-grid" style="margin-top:18px;">
+            <select class="form-control" style="background:#fff;color:#111;" [(ngModel)]="mastersUniversity">
+              <option *ngFor="let item of universities" [value]="item">{{ item }}</option>
+            </select>
+
+            <select class="form-control" style="background:#fff;color:#111;" [(ngModel)]="mastersYears">
+              <option *ngFor="let item of studyYears" [value]="item">{{ item }}</option>
+            </select>
+          </div>
+
+          <div *ngIf="experience !== '0'" style="margin-top:18px;">
+            <input class="form-control" style="background:#fff;color:#111;" [(ngModel)]="workplace" placeholder="Где работали">
+          </div>
+
+          <div style="margin-top:18px;">
+            <strong>Есть проекты?</strong>
+            <div class="inline-actions" style="margin-top:10px;">
+              <button type="button" class="chip" [class.active]="hasProjects === 'yes'" (click)="hasProjects = 'yes'">Да</button>
+              <button type="button" class="chip" [class.active]="hasProjects === 'no'" (click)="hasProjects = 'no'">Нет</button>
+            </div>
+          </div>
+
+          <div *ngIf="hasProjects === 'yes'" style="margin-top:18px;">
+            <input class="form-control" style="background:#fff;color:#111;" [(ngModel)]="projectLink" placeholder="Ссылка на проект">
+          </div>
+
+          <div style="margin-top:18px;">
+            <strong>Языки</strong>
+            <div class="inline-actions" style="margin-top:10px;">
+              <button
+                type="button"
+                class="chip"
+                *ngFor="let item of languageOptions"
+                [class.active]="languages.includes(item)"
+                (click)="toggleLanguage(item)">
+                {{ item }}
+              </button>
+            </div>
+          </div>
+
+          <div style="margin-top:18px;">
+            <textarea class="form-control" style="min-height:140px;background:#fff;color:#111;" [(ngModel)]="about" placeholder="О себе"></textarea>
+          </div>
+
+          <div *ngIf="error" style="color:red;margin-top:12px;">{{ error }}</div>
+
+          <div class="inline-actions" style="margin-top:20px;">
+            <button class="primary-btn" (click)="save()">Сохранить</button>
+          </div>
+        </div>
+      </main>
+
+      <aside class="glass panel">
+        <h3>Аккаунт</h3>
+        <div>{{ user?.name }} {{ user?.surname }}</div>
+      </aside>
+    </div>
+  </div>
+</div>

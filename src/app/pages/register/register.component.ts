@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-register',
@@ -22,46 +23,44 @@ export class RegisterComponent {
   phone = '';
   address = '';
   company = '';
+  error = '';
+
   methods = [
     { id: 'google', label: 'Google' },
     { id: 'icloud', label: 'iCloud' },
     { id: 'phone', label: 'Телефон' },
     { id: 'other', label: 'Другие' }
   ];
-  constructor(private router: Router) {}
-  selectMethod(value: string): void { this.method = value; }
-  submit(): void {
-    if (!this.login || !this.password || !this.name || !this.surname) {
-      alert('Заполни обязательные поля');
-      return;
+
+  constructor(private router: Router, private api: ApiService) {}
+
+  async submit(): Promise<void> {
+    this.error = '';
+
+    try {
+      const user = await this.api.post('/register/', {
+        method: this.method,
+        login: this.login,
+        password: this.password,
+        role: this.role,
+        name: this.name,
+        surname: this.surname,
+        patronymic: this.patronymic,
+        email: this.email,
+        phone: this.phone,
+        address: this.address,
+        company: this.company
+      });
+
+      localStorage.setItem('currentUser', JSON.stringify(user));
+
+      if (user.role === 'worker') {
+        this.router.navigate(['/worker']);
+      } else {
+        this.router.navigate(['/employer']);
+      }
+    } catch (e: any) {
+      this.error = e.message || 'Ошибка регистрации';
     }
-    const raw = localStorage.getItem('users');
-    const users = raw ? JSON.parse(raw) : [];
-    const exists = users.find((u: any) => u.login === this.login);
-    if (exists) {
-      alert('Такой логин уже существует');
-      return;
-    }
-    const user = {
-      id: Date.now(),
-      method: this.method,
-      login: this.login,
-      password: this.password,
-      role: this.role,
-      name: this.name,
-      surname: this.surname,
-      patronymic: this.patronymic,
-      email: this.email,
-      phone: this.phone,
-      address: this.address,
-      company: this.company,
-      resumes: [],
-      favorites: [],
-      notifications: []
-    };
-    users.push(user);
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    this.router.navigate(['/home']);
   }
 }

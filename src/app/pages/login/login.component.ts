@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-login',
@@ -12,16 +13,28 @@ import { Router, RouterLink } from '@angular/router';
 export class LoginComponent {
   login = '';
   password = '';
-  constructor(private router: Router) {}
-  submit(): void {
-    const raw = localStorage.getItem('users');
-    const users = raw ? JSON.parse(raw) : [];
-    const found = users.find((u: any) => u.login === this.login && u.password === this.password);
-    if (!found) {
-      alert('Неверный логин или пароль');
-      return;
+  error = '';
+
+  constructor(private router: Router, private api: ApiService) {}
+
+  async submit(): Promise<void> {
+    this.error = '';
+
+    try {
+      const user = await this.api.post('/login/', {
+        login: this.login,
+        password: this.password
+      });
+
+      localStorage.setItem('currentUser', JSON.stringify(user));
+
+      if (user.role === 'worker') {
+        this.router.navigate(['/worker']);
+      } else {
+        this.router.navigate(['/employer']);
+      }
+    } catch (e: any) {
+      this.error = e.message || 'Ошибка входа';
     }
-    localStorage.setItem('currentUser', JSON.stringify(found));
-    this.router.navigate(['/home']);
   }
 }

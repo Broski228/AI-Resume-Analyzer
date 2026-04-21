@@ -1,0 +1,33 @@
+<div class="page-bg">
+  <div class="wrap">
+    <div class="main-shell">
+      <aside class="glass panel">
+        <a routerLink="/worker" class="side-btn">Главная</a>
+        <a routerLink="/worker/resume/create" class="side-btn">Создать резюме</a>
+        <a routerLink="/worker/resumes" class="side-btn active">Мои резюме</a>
+      </aside>
+
+      <main class="glass panel">
+        <h1 style="margin-top:0;">Мои резюме</h1>
+
+        <div class="resume-list">
+          <div *ngFor="let item of resumes" class="light-card">
+            <h2 style="margin-top:0;">{{ user?.surname }} {{ user?.name }}</h2>
+            <div>{{ item.specialty }} / {{ item.level }}</div>
+            <div style="margin-top:10px;">{{ item.city }} · Опыт: {{ item.experience }}</div>
+            <div style="margin-top:10px;">{{ item.about }}</div>
+          </div>
+
+          <div *ngIf="resumes.length === 0" class="card-dark">
+            Пока резюме нет
+          </div>
+        </div>
+      </main>
+
+      <aside class="glass panel">
+        <h3>Аккаунт</h3>
+        <div>{{ user?.name }} {{ user?.surname }}</div>
+      </aside>
+    </div>
+  </div>
+</div>

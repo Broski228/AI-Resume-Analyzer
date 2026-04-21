@@ -1,0 +1,34 @@
+<div class="page-bg">
+  <div class="wrap">
+    <div class="main-shell">
+      <aside class="glass panel">
+        <div class="brand">
+          <img src="assets/logo.png" alt="logo">
+          <div>
+            <h2 style="margin:0;">Job Platform</h2>
+            <div style="opacity:.7;">Worker menu</div>
+          </div>
+        </div>
+
+        <a routerLink="/worker" class="side-btn active">Главная</a>
+        <a routerLink="/worker/resume/create" class="side-btn">Создать резюме</a>
+        <a routerLink="/worker/resumes" class="side-btn">Мои резюме</a>
+      </aside>
+
+      <main class="glass panel">
+        <h1 style="margin-top:0;">Добро пожаловать, {{ user?.name }}</h1>
+        <p>Здесь ты можешь создать резюме и потом посмотреть его в разделе “Мои резюме”.</p>
+
+        <div style="margin-top:20px;">
+          <a routerLink="/worker/resume/create" class="primary-btn" style="display:inline-block;">Создать резюме</a>
+        </div>
+      </main>
+
+      <aside class="glass panel">
+        <h3 style="margin-top:0;">Аккаунт</h3>
+        <div style="opacity:.7;margin-bottom:16px;">{{ user?.name }} {{ user?.surname }}</div>
+        <button class="account-btn" (click)="logout()">Выход</button>
+      </aside>
+    </div>
+  </div>
+</div>
